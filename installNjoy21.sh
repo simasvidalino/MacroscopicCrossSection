@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo apt-get upgrade
 sudo apt install gfortran
 sudo apt install python3
 sudo apt install gcc
