@@ -1,0 +1,8 @@
+showAllFolders(0);   Sorted by: [Reactions]   Reorder by: [Libraries]	setViewOptions();    View:basicextended:get MAT, PEN, GND, run Inter: resonance integrals, etc.    
+newSection(0);  1) HE-3(N,TOT),SIG                           MT=1 MF=3 NSUB=10                                                    
+beginSection(0);       MF3: [SIG] Cross sections   MT1: [N,TOT] Neutron total cross sections.      
+1  sectSetParams_0(1813,1,8943024,149445,13590329,8943022,225,3,1,0,0);sectSetParams_1('ENDF/B-VIII.0','E=20MeV Lab=LANL Date=20111222','G.Hale,D.Dodder,P.Young       ','44   ');jsOutStr0();  MAT  GND-1.2  PEN  Inter  Info  Summary  ENDF-6  Interpreted  σ  js  MF3-Plot  Plot  ENDF/B-VIII.0   E=20MeV Lab=LANL Date=20111222                    G.Hale,D.Dodder,P.Young        
+endSection(0);newSection(1);  2) HE-3(STD,TOT),SIG                         MT=1 MF=3 NSUB=19                                                    
+beginSection(1);       MF3: [SIG] Cross sections   MT1: [N,TOT] Neutron total cross sections.      
+2  sectSetParams_0(1813,2,9033689,150188,13668247,9033687,225,3,1,0,0);sectSetParams_1('ENDF/B-VIII.0','E=20MeV Lab=LANL Date=20111222','G.Hale,D.Dodder,P.Young       ','44   ');jsOutStr0();  MAT  GND-1.2  PEN  Inter  Info  Summary  ENDF-6  Interpreted  σ  js  MF3-Plot  Plot  ENDF/B-VIII.0   E=20MeV Lab=LANL Date=20111222                    G.Hale,D.Dodder,P.Young        
+endSection(1);endshowAllFolders(2);

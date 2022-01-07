@@ -1,6 +1,5 @@
 import time
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 
 class WebScraping:
     def __init__(self, target, reaction, quantity): #python builder
@@ -32,7 +31,12 @@ class WebScraping:
 
         self.driver.find_element_by_name("chkLib0").click()
         self.driver.find_element_by_css_selector("input[type=submit]").click()
-        self.driver.find_element_by_class_name("e4link").click()
+        self.driver.find_element_by_css_selector("form > input:nth-child(14)").click()
+        self.driver.find_element_by_css_selector("form > input:nth-child(10)").click()
+        self.driver.find_element_by_css_selector("a[title='Show ENDF-6 file...']").click()
+        time.sleep(8)
+        # 'RESOLVI O POGAMA' - Goliaba Child, 2022
+        #self.driver.find_element_by_class_name("e4link").click()
 
     def saveText(self):
         text = self.driver.find_element_by_css_selector("pre").get_attribute("textContent").encode("utf-8")
@@ -42,4 +46,4 @@ class WebScraping:
 
         assert "No results found." not in self.driver.page_source
         self.driver.close()
-crossSection1 =  WebScraping("HE-3", "N,G", "SIG")
+
