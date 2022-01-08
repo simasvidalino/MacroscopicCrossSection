@@ -7,6 +7,7 @@ class WebScraping:
         self.reaction = reaction
         self.quantity = quantity
         self.driver   = webdriver.Firefox()
+        #self.driver.set_window_position(-10000,0) #hide browser
         self.enterWebSite()
         self.setCrossSectionData()
         self.saveText()  
@@ -31,12 +32,10 @@ class WebScraping:
 
         self.driver.find_element_by_name("chkLib0").click()
         self.driver.find_element_by_css_selector("input[type=submit]").click()
-        self.driver.find_element_by_css_selector("form > input:nth-child(14)").click()
-        self.driver.find_element_by_css_selector("form > input:nth-child(10)").click()
+        self.driver.find_element_by_css_selector("form > input:nth-child(14)").click() #select ll
+        self.driver.find_element_by_css_selector("form > input:nth-child(10)").click() #select retrieve
         self.driver.find_element_by_css_selector("a[title='Show ENDF-6 file...']").click()
         time.sleep(8)
-        # 'RESOLVI O POGAMA' - Goliaba Child, 2022
-        #self.driver.find_element_by_class_name("e4link").click()
 
     def saveText(self):
         text = self.driver.find_element_by_css_selector("pre").get_attribute("textContent").encode("utf-8")
