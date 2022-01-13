@@ -1,0 +1,43 @@
+algorithm
+
+1- interface
+
+	1- Enter the number of region
+	2- Chose isotopes and reactions per regions
+	3- Chose Endf File (browse or web)
+	4- Save number of regions and Endf file because in 3- the file can have more isotopes than I need
+
+
+2- WebScraping
+	
+	1- Receive the isotopes names and their reactions
+	2- Enter the website, put texts and choose just Endf library. After, select all and click on retrieve. Get text
+
+3- Shell
+	
+	1- Get the file name from interface
+	2- Verify if there is a Njoy21 dir, if not, execute installNjo21.sh
+	3- Create input file Njoy or use one 
+	4- Execute .\njoy21 -i (fale name from 1) -o output
+
+4- filter
+
+	After step 3, a question: would it make sense just one material with differents material zones to received more than one type of incident particle?
+	*The first ideia is let the user enter with all reactions and to calculate.
+	*The second ideia is chose material per region and put the reaction as a default.
+
+	1- Receive the informations about regions (isotopes per region)
+	2- Pick all isotopes per region together using a dictionary
+
+        Scattering reation:
+
+	[{Region1: {Material 1: reaction1 : []},...,{Material N: reaction1 : [], reaction2 : [], },...}
+
+	Others reactions:
+	[{Region1: {Material 1: [reaction1 : [], ... , reactionN : []], ... , Material N: [reaction1 : [], ... , reactionN : []]}}, {Region2: {Material 1: [reaction1 : [], ... , reactionN : []], ... , Material N: [reaction1 : [], ... , reactionN : []]}}]
+	
+
+5- Calculate macroscopic cross section
+
+	1- Transform expoent from njoy into a number that can be read for python
+	2- Calculate the dates and make a outputfile with Jesus's format (my professor)

@@ -40,7 +40,7 @@ class WebScraping:
     def saveText(self):
         text = self.driver.find_element_by_css_selector("pre").get_attribute("textContent").encode("utf-8")
 
-        with open('OutputCrossSection.txt', 'wb') as file:
+        with open('OutputCrossSection.txt'+ self.target, 'wb') as file:
             file.write(text)
 
         assert "No results found." not in self.driver.page_source
