@@ -8,7 +8,7 @@ class filter():
         self.isotopesPerRegion = isotopesPerRegion
         self.crossSection = [] # Dictionary
         self.scattering = []
-    
+
     def filterNjoyFile(self):
 
         file = open(self.nameOutputFileFromNjoy, "r")
@@ -18,21 +18,22 @@ class filter():
         key3 = 'mat to be processed'  # It can indentify when there is a new isotope
         nIsotope = 0
         nReaction = 0
-        crossSectionPerMaterial = []
         scatteringMatrixPerMaterial = []
+        crossSectionDictionary = {}
 
         for line in file:
 
             if re.search(key3, line):
-                nIsotope = nIsotope + 1  # count isotopes number in the outputNjoy
-                material = line.split()[-1]  # save the mat number to be used in the dictionary
+                isMaterialInList = line.split()[-1] in self.isotopesPerRegion
 
-            if re.search(key1, line) and re.search(key2, line) and not re.search('error', line):
+                if isMaterialInList:
+                    material = line.split()[-1] # save the mat number to be used in the dictionary
+                    nIsotope = nIsotope + 1  # count isotopes number in the outputNjoy
 
-                crossSection = []  
+            if re.search(key1, line) and re.search(key2, line) and not re.search('error', line) and isMaterialInList:
+                crossSection = [[]]  
                 scattering = []
-                crossSectionDictionary = {}
-                
+
                 for j in range(0, 5):  # skip 4 lines for scattering
                     line = file.readline()
 
@@ -42,9 +43,9 @@ class filter():
                         pass  # Ignore output data groupr Njoy 
                     else:
                         if len(line) < 59:
-                            crossSection.append(
+                            crossSection[0].append(
                                 self.formatValue(line.rstrip('\n').split())[1])
-                            
+
                         else:
                             scattering.append(
                                 self.formatValue(line.rstrip('\n').split()))
@@ -52,35 +53,33 @@ class filter():
                     line = file.readline()
 
                 if not crossSection == []:
-                    crossSectionDictionary[material] = crossSection
-                    crossSectionPerMaterial.append(crossSectionDictionary)
-                    print(crossSectionDictionary)
+
+                    if material in crossSectionDictionary.keys():
+                        list = crossSectionDictionary[material] 
+                        list = list + crossSection
+                        crossSectionDictionary[material] = list
+                    else:
+                        crossSectionDictionary[material] = crossSection
 
                 if not scattering == []:
                     scatteringMatrixPerMaterial.append(self.createScatteringDictionary(material, scattering, 3, 29))
-                    
-                nReaction = nReaction + 1
 
+                nReaction = nReaction + 1
                 line = file.readline()
-                print("\n\n")
 
         self.findError(nIsotope, nReaction)
- 
         file.close()
     
     def findError(self, nIsotope, nReaction):
-
         n = nReaction/nIsotope # n must be a integer number 
         if not ((n) - (int(n))) == 0:
             print("Some reaction was not processed correctly by NJOY\n")
             exit
  
     def formatValue(self, line):
-    
         lineOutput = []
 
         for n in range(0, len(line)):
-
             qt_negative = len([c for c in line[n] if c == '-'])
             qt_positive = len([c for c in line[n] if c == '+'])
 
@@ -112,6 +111,7 @@ class filter():
 
         dictionary[material] = scatteringMatrix
         return dictionary
+
             
-obj = filter("Saida.txt", 0)
+obj = filter("Saida.txt", ["625", "725", "825"])
 obj.filterNjoyFile()
