@@ -1,30 +1,31 @@
 import re  
+import MacroscopicCrossSection as mc
 
 class filter():
     
-    def __init__(self, nameOutputFileFromNjoy, isotopesPerRegion): #python builder
+    def __init__(self, nameOutputFileFromNjoy, isotopesList): #python builder
 
         self.nameOutputFileFromNjoy = nameOutputFileFromNjoy
-        self.isotopesPerRegion = isotopesPerRegion
-        self.crossSection = [] # Dictionary
+        self.isotopesList = isotopesList
+        self.crossSection = [] 
         self.scattering = []
 
     def filterNjoyFile(self):
 
         file = open(self.nameOutputFileFromNjoy, "r")
 
-        key1 = '\\bmf'  # O \b é um meta-caractere para encontrar uma correspondência no início ou no final de uma palavra
-        key2 = '\\bmt'  # key1 e key2 identifica o começo de algum dado do Njoy
+        key1 = '\\bmf'  # The \b is a metacharacter to find a match at the beginning or end of a word
+        key2 = '\\bmt'  # key1 e key2 identifies the beginning of some Njoy data
         key3 = 'mat to be processed'  # It can indentify when there is a new isotope
         nIsotope = 0
         nReaction = 0
-        scatteringMatrixPerMaterial = []
         crossSectionDictionary = {}
+        scatteringDictionary = {}
 
         for line in file:
 
             if re.search(key3, line):
-                isMaterialInList = line.split()[-1] in self.isotopesPerRegion
+                isMaterialInList = line.split()[-1] in self.isotopesList
 
                 if isMaterialInList:
                     material = line.split()[-1] # save the mat number to be used in the dictionary
@@ -40,7 +41,7 @@ class filter():
                 while not len(line) <= 2:  # while not find a empty line
 
                     if 'flx' in line:
-                        pass  # Ignore output data groupr Njoy 
+                        pass  # Ignore flux data in mt  1 Total
                     else:
                         if len(line) < 59:
                             crossSection[0].append(
@@ -62,12 +63,16 @@ class filter():
                         crossSectionDictionary[material] = crossSection
 
                 if not scattering == []:
-                    scatteringMatrixPerMaterial.append(self.createScatteringDictionary(material, scattering, 3, 29))
+                    scatteringDictionary[material] = scattering
 
                 nReaction = nReaction + 1
                 line = file.readline()
 
         self.findError(nIsotope, nReaction)
+
+        mc.macroscopicCrossSection(self.isotopesList, [["725", "625", "825"], ["725"]], 
+        crossSectionDictionary, scatteringDictionary, {'625': 2.1, '725': 1.5, '825': 0.5}) #Build object
+        
         file.close()
     
     def findError(self, nIsotope, nReaction):
@@ -84,33 +89,18 @@ class filter():
             qt_positive = len([c for c in line[n] if c == '+'])
 
             if qt_negative == 2:
-                lineOutput.append(line[n].replace("-", "E-").replace("E-", "-", 1))
+                lineOutput.append(float(line[n].replace("-", "E-").replace("E-", "-", 1)))
 
             elif qt_negative == 1 and qt_positive == 0:
-                lineOutput.append(line[n].replace("-", "E-"))
+                lineOutput.append(float(line[n].replace("-", "E-")))
 
             elif qt_negative == 0 and qt_positive == 0:
-                lineOutput.append(line[n])
+                lineOutput.append(float(line[n]))
 
             else:
-                lineOutput.append(line[n].replace("+", "E+"))
+                lineOutput.append(float(line[n].replace("+", "E+")))
 
         return lineOutput
-
-    def createScatteringDictionary(self, material, scattering, legendreOrder, nEnergyGroup):
-        dictionary = {}
-        data = [0.]*(legendreOrder + 1) # fill matrix with zero
-        scatteringMatrix = [ [ data for y in range(nEnergyGroup+1) ] for x in range(nEnergyGroup+1) ]
-
-        for values in scattering:
-            ge1 = int(values[0])
-            ge0 = int(values[1])
-
-            for l in range(legendreOrder + 1): # ignore 2 values of energy group
-                scatteringMatrix[ge1 - 1][ge0 - 1][l] = float(values[l + 2])
-
-        dictionary[material] = scatteringMatrix
-        return dictionary
 
             
 obj = filter("Saida.txt", ["625", "725", "825"])
