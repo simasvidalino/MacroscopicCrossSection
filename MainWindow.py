@@ -11,8 +11,8 @@ def beginWindow():
     menu_def = [["Help", ["About...", "NJOY16 Manual...", "ENDF Manual...", "ENDF Site..."]]]
 
     frameEndf= [
-                [sg.Text("On the internet",  font='Roboto 10', size = (20,0), key = "web"), sg.Button("Go", size = (6,0), key = "webscraping")],
-                [sg.Text("On the computer folder",  font='Roboto 10', size = (20,0), key = "computer"), sg.FileBrowse(initial_folder = os.path.dirname(os.path.abspath(__file__)), size = (6,0), key = "browse")],
+                [sg.Text("On the internet:",  font='Roboto 10', size = (20,0), key = "web"), sg.Button("Go", size = (6,0), key = "webscraping")],
+                [sg.Text("On this computer:",  font='Roboto 10', size = (20,0), key = "computer"), sg.Input(size = (15, 0), key = "endfNameFile")], #sg.FileBrowse(initial_folder = os.path.dirname(os.path.abspath(__file__)), size = (6,0), key = "browse")],
                 ]
 
     frameRegions= [
@@ -50,15 +50,19 @@ def windowRegionInput(counter):
     return sg.Window("Macroscopic Cross Section", layout, finalize=True)
 
 def main():
+    cmd = shell.shellControll()
     target  = []
     reaction = []
     firstWindow = beginWindow()
     counter = 1
     spinBox = 1
+    wasRegionsSet = False
 
-    while True:
+    while True: #event loop
         window, event, inputData = sg.read_all_windows()
         print(event)
+
+        menuHelp(cmd, event)
         
         if event in (sg.WIN_CLOSED, 'Exit', "cancel"):
             break
@@ -75,6 +79,9 @@ def main():
 
             print(target)
             print(reaction)
+
+            if len(target) > 0 and reaction > 0:
+                wasRegionsSet = True
 
             firstWindow._Show()
             
@@ -121,13 +128,32 @@ def main():
             else:
                 windowRegionInput(counter)
 
-        if event == "webscraping":
+        if event == "webscraping" and wasRegionsSet:
             ws.WebScraping(target, reaction, "SIG") #SIG means cross section
-            fileName = "OutputCrossSection.txt"+ target
+            fileName = "OutputCrossSection" + target.replace(";", "") + ".txt"
+            cmd.setFileNameENDF(fileName)
+            
 
-        if event == "browse":
-            fileName = inputData["browse"]
+        if event == "ok" and wasRegionsSet:
+            print(inputData["endfNameFile"])
+            cmd.setFileNameENDF(inputData["endfNameFile"])
+              
+def menuHelp(cmd, event):
 
-        shell.setFileNameENDF(fileName)
+    if event == "NJOY16 Manual...":
+        fileName = "njoy16Manual.pdf"
+        cmd.viewFile(fileName)
+    
+    if event == "ENDF Manual...":
+        fileName = "endfManual.pdf"
+        cmd.viewFile(fileName)
+        
+    if event == "ENDF Manual...":
+        fileName = "endfManual.pdf"
+        cmd.viewFile(fileName)
+
+    if event == "ENDF Site...":
+        siteAddress = "https://www-nds.iaea.org/exfor/endf.htm"
+        cmd.openWebSite(siteAddress)
   
 headleWithUserInput = main()
